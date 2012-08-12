@@ -28,7 +28,7 @@
 #----- Modules ------#
 ######################
 
-debug=True
+
 
 #---- Importation ---#
 import random
@@ -42,61 +42,55 @@ class twistYeld():
 		if maxV==None:
 			self._maxV=minV
 			self._minV=0
-		self._valM=(self._minV+self._maxV)/2
-		self._valm=self._valM
-		self._state=1
+		self._mid=(self._minV+self._maxV)/2
+		self._val=self._mid
+		self._iter=0
+		self._state=0
 	def __iter__(self):
 		return self
 	def next(self):
+		if not self._state:
+			self._state=-1
+			self._iter+=1
+			return self._val
+		return self.evolve()
+	def evolve(self):
+		self._val=self._state*self._iter+self._mid
+		if self._val>=self._maxV or self._val<self._minV: raise StopIteration
+		if self._state==1:
+			self._iter+=1
 		self._state*=-1
-		if self._state==1: return self.add()
-		else: return self.sub()
-	def add(self):
-		self._valM+=1
-		if self._valM>self._maxV:
-			if self._valm<self._minV:
-				raise StopIteration
-			else: 
-				return self.sub()
-		return self._valM
-	def sub(self):
-		self._valm-=1
-		if self._valm<self._minV:
-			if self._valm>self._maxV:
-				raise StopIteration
-			else: 
-				return self.add()
-		return self._valm
+		return self._val
 ######################
 #     Functions      #
 ######################
 
-def mapGen(size,percents,give,drop,sizeFunction,yell=xrange):
+def mapGen(originPict,percents,give,drop,sizeFunction,yell=xrange):
 	"""mapgen(size,percents,givingFunction,droppingFunction,sizeFunction)
 	Generate a size image according to the percentages of pixels provided, using the given functions
 	givingFunction is used to generate a pixel according to a percendage dictionnary
 	droppingFunction is used to put the pixel on the map
 	sizeF is the size needed af pixels to give to the functions"""
-	pict=init_image('RGB',size)
+	size=originPict.size
+	mode=originPict.mode
+	pixtO=originPict.load()
+
+	pict=init_image(mode,size)
 	pixt=pict.load()
-	i=0
-	dprint("Map being generated...")
-	for g in give:
-		dprint("Pass ",i,' (',str(g),')')
-		for i in yell(1,size[0]-1):
-			for j in yell(1,size[1]-1):
-				drop(pixt,(i,j),give(percents,collect(pixt,(i,j),sizeFunction)))
-		i+=1
-	dprint("Map generated")
+	
+	for i in yell(0,size[0]):
+		for j in yell(0,size[1]):
+			drop(pixt,(i,j),give(percents,collect(pixtO,(i,j),sizeFunction,size)))
+	
 	return pict
 
 def init_image(mode,size):
 	return Image.new(mode,size)
 
-def collect(imageTable,center,size):
+def collect(imageTable,center,sizeP,size):
 	ret=[]
-	for i in xrange(center[0]-size,center[0]+size):
-		for j in xrange(center[1]-size,center[1]+size):
+	for i in xrange(max(center[0]-sizeP,0),min(center[0]+sizeP,size[0])):
+		for j in xrange(max(center[1]-sizeP,0),min(center[1]+sizeP,size[1])):
 			ret.append(imageTable[i,j])
 	return ret
 	
@@ -115,6 +109,3 @@ def giving(percents,pixels,randomness,genuine):
 
 def dropping(imageTable,pos,pixel):
 	imageTable[pos[0],pos[1]]=pixel
-
-def dprint(*txt):
-	if debug: print txt
