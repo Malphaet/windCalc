@@ -1,5 +1,7 @@
 *.py[co]
 *.jpg
+*.bmp
+*.tiff
 
 # Packages
 *.egg

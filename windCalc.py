@@ -42,5 +42,14 @@ import mapGen as mg
 #     Functions      #
 ######################
 
-print mg.mapGen.__doc__
-mg.mapGen((420,420),{(255,0,0):20,(0,255,255):0,(0,0,0):0},mg.giving,mg.dropping,1).save('test.jpg','jpeg')
+######################
+#    Main Program    #
+######################
+
+# -- Vars -- #
+colors={(120,50,12):3,(11,101,156):2,(0,0,0):0}
+# -- Prog -- #
+
+pict=mg.mapGen((420,420),colors,[mg.confGive(mg.giving,(0,2),(0,3))],mg.dropping,1)
+
+pict.save('test.tiff','tiff')
