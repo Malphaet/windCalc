@@ -8,5 +8,6 @@ Map generator mapGen included
 
 TODO
 ========
-* Spetial function generator
-* New yell
+* New coast generator
+* Set of functions (erode, canyon, mountain...)
+

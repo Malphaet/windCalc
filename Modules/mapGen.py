@@ -61,6 +61,7 @@ class twistYeld():
 			self._iter+=1
 		self._state*=-1
 		return self._val
+
 ######################
 #     Functions      #
 ######################
@@ -90,7 +91,7 @@ def init_image(mode,size):
 def collect(imageTable,center,sizeP,size):
 	ret=[]
 	for i in xrange(max(center[0]-sizeP,0),min(center[0]+sizeP,size[0])):
-		for j in xrange(max(center[1]-sizeP,0),min(center[1]+sizeP,size[1])):
+		for j in xrange(max(center[1]-sizeP,0),min(center[1],size[1])):
 			ret.append(imageTable[i,j])
 	return ret
 	
@@ -99,7 +100,6 @@ def confGive(funct,randomness,genuine):
 	def configuratedGive(percent,pixels):
 		return giving(percent,pixels,randomness,genuine)
 	return configuratedGive
-	
 
 def giving(percents,pixels,randomness,genuine):
 	pixs=dict.fromkeys(percents.keys(),0)
