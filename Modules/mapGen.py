@@ -35,33 +35,6 @@ import random
 from PIL import Image
 
 
-class twistYeld():
-	def __init__(self,minV,maxV=None):
-		self._minV=minV
-		self._maxV=maxV
-		if maxV==None:
-			self._maxV=minV
-			self._minV=0
-		self._mid=(self._minV+self._maxV)/2
-		self._val=self._mid
-		self._iter=0
-		self._state=0
-	def __iter__(self):
-		return self
-	def next(self):
-		if not self._state:
-			self._state=-1
-			self._iter+=1
-			return self._val
-		return self.evolve()
-	def evolve(self):
-		self._val=self._state*self._iter+self._mid
-		if self._val>=self._maxV or self._val<self._minV: raise StopIteration
-		if self._state==1:
-			self._iter+=1
-		self._state*=-1
-		return self._val
-
 ######################
 #     Functions      #
 ######################

@@ -35,9 +35,9 @@ import os,sys
 #------ Ajouts ------#
 CURRENT_DIR=os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(CURRENT_DIR,'Modules'))
-sys.path.append(os.path.join(CURRENT_DIR,'Modules/mapGen'))
 
 import mapGen as mg
+
 ######################
 #     Functions      #
 ######################
