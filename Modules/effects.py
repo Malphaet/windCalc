@@ -47,4 +47,10 @@ def erode(image,erode,sizePatch):
 		for j in xrange(0,size[1]):
 			if image[i,j]==erode:
 				image[i,j]=image[randSize(i,sizePatch,size[0]),randSize(j,sizePatch,size[1])]
-
+######################
+#    Main Program    #
+######################
+import sys
+if __name__=='__main__':
+	if len(sys.argv)>1 and sys.argv[1]=='test':
+		print "No test implemented yet"

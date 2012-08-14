@@ -31,25 +31,29 @@
 
 #---- Importation ---#
 import os,sys
-
+from PIL import Image, ImageDraw
 #------ Ajouts ------#
 CURRENT_DIR=os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(CURRENT_DIR,'Modules'))
 
 import mapGen as mg
+import geoGen as gg
 
 ######################
 #     Functions      #
 ######################
 
-def dprint(*txt):
-	if debug: 
-		st=''
-		for s in txt: st+=str(s)+' '
-		print st
 ######################
 #    Main Program    #
 ######################
 
-# -- Vars -- #
-debug=True
+im=Image.new('1',(400,400))
+
+draw=ImageDraw.Draw(im)
+old=gg.scatteredLine([[50,0],[50,400]])
+for nb in xrange(7):
+	etapes=1*(nb+1)
+	old=gg.multiScatter(old,1)
+	for i in xrange(2**etapes):
+		draw.line((old[i][0]+nb*50,old[i][1],old[i+1][0]+nb*50,old[i+1][1]),1)
+im.save('test.bmp','bmp')

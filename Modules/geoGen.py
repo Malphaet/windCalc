@@ -103,7 +103,7 @@ def scatter(pos,distMax):
 		if i%2: funct=math.cos
 		else: funct=math.sin
 		
-		ret.append(pos[i]+funct(angle[i])*distMax)
+		ret.append(int(pos[i]+funct(angle[i])*distMax))
 	
 	return ret
 
@@ -112,19 +112,25 @@ def scatterList(liste,percent):
 	mx,i=len(liste),0
 	while i<mx-1:
 		center=liste.middle(i,i+1)
-		dist=liste.euclidDist(i,i+1)
+		dist=liste.euclidDist(i,i+1)/2
 		new.append(scatter(center,(dist*percent)/100))
-		new.append(old[i+1])
+		new.append(liste[i+1])
 		i+=1
 	return new
+
+def multiScatter(points,times,percent=20):
+	if isinstance(points,scatteredLine): old=points
+	else: old=scatteredLine(points)
+	for i in xrange(times): old=scatterList(old,percent)
+	return old
 ######################
 #      Testing       #
 ######################	
 
 if __name__=='__main__':
 	print 'Tests in progress...'
+	liste=scatteredLine([[0,100],[400,100]])
 	random.seed()
-	old=scatteredLine([[0,100],[400,100]])
-	for i in xrange(4):
-		print old
-		old=scatterList(old,20)
+	print liste
+	print multiScatter(liste,4)
+	

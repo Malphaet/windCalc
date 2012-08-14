@@ -24,6 +24,13 @@
 # LICENCE                                              #
 ########################################################
 
+#-- Vars --#
+debug=True
+
+######################
+#      Classes       #
+######################
+
 class twistYeld():
 	def __init__(self,minV,maxV=None):
 		self._minV=minV
@@ -64,10 +71,10 @@ def dprint(*txt):
 def randSize(nb,toAdd,maxV):
 	return random.randint(max(nb-toAdd,0),min(nb+toAdd,maxV))
 	
-	
 ######################
 #    Main Program    #
 ######################
-
-# -- Vars -- #
-debug=True
+import sys
+if __name__=='__main__':
+	if len(sys.argv)>1 and sys.argv[1]=='test':
+		print "No test to be done"

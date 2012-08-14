@@ -86,7 +86,7 @@ def dropping(imageTable,pos,pixel):
 
 if __name__=='__main__':
 	args=sys.argv
-	
+
 	if len(args)>1 and args[1]=='test': 
 	
 		colors={(120,50,12):10,(11,101,156):11,(0,0,0):0}
