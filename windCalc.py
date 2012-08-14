@@ -53,28 +53,3 @@ def dprint(*txt):
 
 # -- Vars -- #
 debug=True
-
-colors0={(120,50,12):9,(11,101,156):9,(0,0,0):0}
-colors1={(120,50,12):10,(11,101,156):11,(0,0,0):0}
-colors=colors1
-
-vals=[((0,1),(1,2)),((1,1),(0,5)),((1,2),(0,2))]
-functs=[mg.confGive(mg.giving,i,j) for i,j in vals]
-patch_sizes=[0,1,2]
-
-# -- Prog -- #
-pict=mg.init_image('RGB',(420,420))
-
-#for i in mg.twistYeld(-1,5):
-#	print i
-
-np=0
-dprint("Map being generated...")
-for funct in functs:
-	dprint("Pass ",np)
-	pict=mg.mapGen(pict,colors,funct,mg.dropping,patch_sizes[np])
-	pict.save('tmp_{}.bmp'.format(np),'bmp')
-	np+=1
-dprint("Map generated")
-
-pict.save('test.tiff','tiff')

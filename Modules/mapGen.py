@@ -28,10 +28,10 @@
 #----- Modules ------#
 ######################
 
-
-
 #---- Importation ---#
-import random
+import random,sys
+from utils import dprint
+
 from PIL import Image
 
 
@@ -82,3 +82,28 @@ def giving(percents,pixels,randomness,genuine):
 
 def dropping(imageTable,pos,pixel):
 	imageTable[pos[0],pos[1]]=pixel
+
+
+if __name__=='__main__':
+	args=sys.argv
+	
+	if len(args)>1 and args[1]=='test': 
+	
+		colors={(120,50,12):10,(11,101,156):11,(0,0,0):0}
+		vals=[((1,2),(0,2))]
+		functs=[confGive(giving,i,j) for i,j in vals]
+		patch_sizes=[0]
+
+		# -- Prog -- #
+		pict=init_image('RGB',(420,420))
+
+		np=0
+		dprint("Map being generated...")
+		for funct in functs:
+			dprint("Pass ",np)
+			pict=mapGen(pict,colors,funct,dropping,patch_sizes[np])
+#			pict.save('tmp_{}.tiff'.format(np),'tiff')
+			np+=1
+		dprint("Map generated")
+
+		pict.save('test.tiff','tiff')

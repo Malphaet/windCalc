@@ -51,6 +51,23 @@ class twistYeld():
 		self._state*=-1
 		return self._val
 
+######################
+#     Functions      #
+######################
+
+def dprint(*txt):
+	if debug: 
+		st=''
+		for s in txt: st+=str(s)+' '
+		print st
 
 def randSize(nb,toAdd,maxV):
 	return random.randint(max(nb-toAdd,0),min(nb+toAdd,maxV))
+	
+	
+######################
+#    Main Program    #
+######################
+
+# -- Vars -- #
+debug=True
