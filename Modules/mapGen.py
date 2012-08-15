@@ -32,78 +32,80 @@
 import random,sys
 from utils import dprint
 
-from PIL import Image
-
+from PIL import Image,ImageDraw
+import geoGen as gg
 
 ######################
 #     Functions      #
 ######################
 
-def mapGen(originPict,percents,give,drop,sizeFunction,yell=xrange):
-	"""mapgen(size,percents,givingFunction,droppingFunction,sizeFunction)
-	Generate a size image according to the percentages of pixels provided, using the given functions
-	givingFunction is used to generate a pixel according to a percendage dictionnary
-	droppingFunction is used to put the pixel on the map
-	sizeF is the size needed af pixels to give to the functions"""
-	size=originPict.size
-	mode=originPict.mode
-	pixtO=originPict.load()
+######################
+#     Generators
+##########
 
+def mapGen(mode,size,terrains):
+	"""mapgen(mode,size,terrains) => Generate a <size> PIL immage"""
 	pict=init_image(mode,size)
+	drpict=ImageDraw.Draw(pict)
 	pixt=pict.load()
 	
-	for i in yell(0,size[0]):
-		for j in yell(0,size[1]):
-			drop(pixt,(i,j),give(percents,collect(pixtO,(i,j),sizeFunction,size)))
-	
+	random.seed()
+	genSea(drpict,size,terrains['sea'])
+	middle=genCoast(drpict,size,terrains['coast'])
+	fillRegion(pixt,size,middle,terrains['coast'])
 	return pict
+
+def genSea(pict,size,color):
+	pict.rectangle((0,0,size[0],size[1]),color)
+	
+def genCoast(pict,size,color):
+	ax,ay,aX,aY=fourBorders(size)
+	liste=gg.multiScatter([[ax,ay],[aX,aY]],4)
+	liste.draw(pict,color)
+	return liste.middle(0,len(liste)-1)
+######################
+#     Utils
+##########
 
 def init_image(mode,size):
 	return Image.new(mode,size)
 
-def collect(imageTable,center,sizeP,size):
-	ret=[]
-	for i in xrange(max(center[0]-sizeP,0),min(center[0]+sizeP,size[0])):
-		for j in xrange(max(center[1]-sizeP,0),min(center[1],size[1])):
-			ret.append(imageTable[i,j])
-	return ret
+def fourBorders(size,opposites=1):
+	crds=[random.randint(0,1)]
+	crds.append(int(not crds[0]))
+	if not opposites: crds.append(random.randint(0,1))
+	else: crds.append(int(not crds[0]))
+	crds.append(int(not crds[1]))
 	
-#--- Spetial functions ---#
-def confGive(funct,randomness,genuine):
-	def configuratedGive(percent,pixels):
-		return giving(percent,pixels,randomness,genuine)
-	return configuratedGive
+	ax,ay=random.randint(0,size[0]),random.randint(0,size[1])
+	aX,aY=random.randint(0,size[0]),random.randint(0,size[1])
+	return ax*crds[0],ay*crds[1],aX*crds[2],aY*crds[3]
 
-def giving(percents,pixels,randomness,genuine):
-	pixs=dict.fromkeys(percents.keys(),0)
-	for pix in pixels: pixs[pix]+=random.randint(*randomness)*percents[pix]
-	for pix in percents: pixs[pix]+=random.randint(*genuine)*percents[pix]
-	return max(pixs,key=pixs.get) #random.choice(percents.keys())
-
-def dropping(imageTable,pos,pixel):
-	imageTable[pos[0],pos[1]]=pixel
-
+def fillRegion(pixt,size,start,color):
+	limits=[[0 for i in xrange(size[1])] for j in xrange(size[0])]
+	for i in xrange(size[0]):
+		limits[i][0]=1
+		limits[i][size[1]-1]=1
+	for i in xrange(size[1]):
+		limits[0][i]=1
+		limits[size[1]-1][i]=1
+	print "    !> Not filled: Implementation not done",start
+######################
+#       Tests        #
+######################
 
 if __name__=='__main__':
 	args=sys.argv
-
-	if len(args)>1 and args[1]=='test': 
-	
-		colors={(120,50,12):10,(11,101,156):11,(0,0,0):0}
-		vals=[((1,2),(0,2))]
-		functs=[confGive(giving,i,j) for i,j in vals]
-		patch_sizes=[0]
-
-		# -- Prog -- #
-		pict=init_image('RGB',(420,420))
-
-		np=0
+	if len(args)>1 and args[1]=='test':
+		size,mode=(420,420),'RGB'
+		sys.setrecursionlimit(size[0]*size[1]+1000)
+		colors={'coast':(120,50,12),'sea':(11,101,156)}
+		
 		dprint("Map being generated...")
-		for funct in functs:
-			dprint("Pass ",np)
-			pict=mapGen(pict,colors,funct,dropping,patch_sizes[np])
-#			pict.save('tmp_{}.tiff'.format(np),'tiff')
-			np+=1
+		
+		pict=init_image(mode,size)
+		pict=mapGen(mode,size,colors)
+
 		dprint("Map generated")
 
-		pict.save('test.tiff','tiff')
+		pict.save('test_map.tiff','tiff')

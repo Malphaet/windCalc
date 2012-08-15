@@ -71,6 +71,12 @@ class scatteredLine():
 		for i in self.ecarts(a,b): ret+=i*i
 		return math.sqrt(ret)
 	
+	def draw(self,draw,color):
+#		if not isinstance(draw,ImageDraw): draw=ImageDraw.Draw(image)
+		mx=len(self)
+		for i in xrange(mx-1):
+			draw.line((self[i][0],self[i][1],self[i+1][0],self[i+1][1]),color)
+	
 	def __repr__(self):
 		return self._list
 	def __str__(self):
@@ -130,9 +136,8 @@ def multiScatter(points,times,percent=20):
 ######################	
 
 if __name__=='__main__':
-	print 'Tests in progress...'
 	liste=scatteredLine([[0,100],[400,100]])
 	random.seed()
 	print liste
-	print multiScatter(liste,4)
+	print multiScatter(liste,2)
 	
