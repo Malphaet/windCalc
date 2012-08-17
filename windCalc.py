@@ -47,13 +47,9 @@ import geoGen as gg
 #    Main Program    #
 ######################
 
-im=Image.new('1',(400,400))
+from mapGen import mapGen,DEFAULT_COLORS
 
-draw=ImageDraw.Draw(im)
-old=gg.scatteredLine([[50,0],[50,400]])
-for nb in xrange(7):
-	etapes=1*(nb+1)
-	old=gg.multiScatter(old,1)
-	for i in xrange(2**etapes):
-		draw.line((old[i][0]+nb*50,old[i][1],old[i+1][0]+nb*50,old[i+1][1]),1)
+size=(420,420)
+im=mapGen('RGB',size,terrains=DEFAULT_COLORS,genCoast_iter=15)
+
 im.save('test.bmp','bmp')

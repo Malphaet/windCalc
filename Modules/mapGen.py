@@ -33,36 +33,46 @@ import random,sys
 from utils import dprint
 
 from PIL import Image,ImageDraw
+from floodFill import floodFill 
 import geoGen as gg
 
 ######################
 #     Functions      #
 ######################
 
+DEFAULT_COLORS={'coast':(120,50,12),'sea':(11,101,156),'borders':(0,0,0)}
+DEFAULT_MAPGEN={'genCoast_iter':5}
 ######################
 #     Generators
 ##########
 
-def mapGen(mode,size,terrains):
-	"""mapgen(mode,size,terrains) => Generate a <size> PIL immage"""
+def mapGen(mode,size,terrains,**kwargs):
+	"""mapgen(mode,size,terrains,**kwargs) => Generate a <size> PIL immage
+	The aditional arguments can set some more specific parameters"""
 	pict=init_image(mode,size)
 	drpict=ImageDraw.Draw(pict)
 	pixt=pict.load()
 	
 	random.seed()
+	kwargs.update(DEFAULT_MAPGEN)
 	genSea(drpict,size,terrains['sea'])
-	middle=genCoast(drpict,size,terrains['coast'])
-	fillRegion(pixt,size,middle,terrains['coast'])
+	middle=genCoast(drpict,size,terrains['coast'],kwargs['genCoast_iter'])
+	genBorders(drpict,size,terrains['borders'])
+	floodFill(pixt,middle,terrains['coast'],terrains['borders'])
+	
 	return pict
 
 def genSea(pict,size,color):
 	pict.rectangle((0,0,size[0],size[1]),color)
 	
-def genCoast(pict,size,color):
-	ax,ay,aX,aY=fourBorders(size)
-	liste=gg.multiScatter([[ax,ay],[aX,aY]],4)
+def genCoast(pict,size,color,iters):
+	ax,ay,aX,aY=randEdges(size)
+	liste=gg.multiScatter([[ax,ay],[aX,aY]],iters)
 	liste.draw(pict,color)
 	return liste.middle(0,len(liste)-1)
+
+def genBorders(pict,size,color):
+	pict.rectangle([(0,0),(size[0]-1,size[1]-1)],outline=color)
 ######################
 #     Utils
 ##########
@@ -70,26 +80,21 @@ def genCoast(pict,size,color):
 def init_image(mode,size):
 	return Image.new(mode,size)
 
-def fourBorders(size,opposites=1):
-	crds=[random.randint(0,1)]
-	crds.append(int(not crds[0]))
-	if not opposites: crds.append(random.randint(0,1))
-	else: crds.append(int(not crds[0]))
-	crds.append(int(not crds[1]))
-	
-	ax,ay=random.randint(0,size[0]),random.randint(0,size[1])
-	aX,aY=random.randint(0,size[0]),random.randint(0,size[1])
-	return ax*crds[0],ay*crds[1],aX*crds[2],aY*crds[3]
+def randEdges(size):
+	i,j,mx=0,0,len(size)
+	crds=[None]*(2*mx)
+	cx,cy=[0,size[0]],[0,size[1]]
+	while i<mx:
+		rd=random.randint(0,1)
+		if rd:
+			crds[2*i]=cx.pop(random.randint(0,len(cx)-1))
+			crds[2*i+1]=random.randint(0,size[1])
+		else:
+			crds[2*i]=random.randint(0,size[0])
+			crds[i*2+1]=cy.pop(random.randint(0,len(cy)-1))
+		i+=1
+	return crds
 
-def fillRegion(pixt,size,start,color):
-	limits=[[0 for i in xrange(size[1])] for j in xrange(size[0])]
-	for i in xrange(size[0]):
-		limits[i][0]=1
-		limits[i][size[1]-1]=1
-	for i in xrange(size[1]):
-		limits[0][i]=1
-		limits[size[1]-1][i]=1
-	print "    !> Not filled: Implementation not done",start
 ######################
 #       Tests        #
 ######################
@@ -99,8 +104,7 @@ if __name__=='__main__':
 	if len(args)>1 and args[1]=='test':
 		size,mode=(420,420),'RGB'
 		sys.setrecursionlimit(size[0]*size[1]+1000)
-		colors={'coast':(120,50,12),'sea':(11,101,156)}
-		
+		colors=DEFAULT_COLORS
 		dprint("Map being generated...")
 		
 		pict=init_image(mode,size)
