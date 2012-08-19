@@ -40,7 +40,7 @@ import geoGen as gg
 #     Functions      #
 ######################
 
-DEFAULT_COLORS={'coast':(120,50,12),'sea':(11,101,156),'borders':(0,0,0)}
+DEFAULT_COLORS={'coast':(120,50,12),'sea':(11,101,156),'borders':(0,0,0),'vectors':(21,210,21)}
 DEFAULT_MAPGEN={'genCoast_iter':5,'genCoast_scatter':20}
 ######################
 #     Generators
