@@ -33,7 +33,7 @@ from mapGen import mapGen,DEFAULT_COLORS
 from math import cos,sin,tan,atan,atan2,acos,asin,sqrt,radians,degrees
 
 terrains=DEFAULT_COLORS
-DEFAULT_WIND_SIZE=20
+DEFAULT_WIND_SIZE=5
 #################
 # Classes
 #################
@@ -55,7 +55,7 @@ class windVector(vector):
 		vector.__init__(self,pos)
 		self.value=value
 		self.angle=radians(angle)
-		self._size=DEFAULT_WIND_SIZE
+		self._size=size
 		self._dist=0
 	
 	def update(self):
@@ -75,13 +75,12 @@ class windVector(vector):
 		dist=self.dist()
 		a,b=self.angle,0.3
 		c,d=radians(180)+a-b,radians(180)+a+b
-		print degrees(a),(b),degrees(c),degrees(d)
-		R=[]
-		for angle,l in zip((a,b,c),(self.value,dist,dist)):
-			R.append(tuple([int((f(angle)*l)+add) for f,add in zip((cos,sin),(self[0]/2,self[1]/2))]))
 		
-		print R
-		d_image.polygon(R,fill=terrains['vectors'])
+		R=[]
+		for angle in (a,c,d):
+			R.append(tuple([int((f(angle)*dist)+add) for f,add in zip((sin,cos),(self[0],self[1]))]))
+		
+		d_image.polygon(R,fill=colorVector(self.value))
 #################
 # Functions
 #################
@@ -129,6 +128,9 @@ def value(val):
 		return 0
 	print val
 	raise ValueError
+
+def colorVector(val):
+	return (val%255,val%255,val%255)
 #################
 # Test
 #################
@@ -143,8 +145,9 @@ if __name__=='__main__':
 #		a=vector(1,2)
 #		b=vector([1,5])
 #		print a,b
-
-		c=windVector([250,250],50,200)
+		for i in xrange(1,101):
+			for j in xrange(1,101):
+				windVector([i*10,j*10],(i+j)*25,(i+j)*10).write(dr_im)
 #		print c
-		c.write(dr_im)
+#		c.write(dr_im)
 		im.show()
