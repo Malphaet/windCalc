@@ -41,22 +41,21 @@ import geoGen as gg
 ######################
 
 DEFAULT_COLORS={'coast':(120,50,12),'sea':(11,101,156),'borders':(0,0,0)}
-DEFAULT_MAPGEN={'genCoast_iter':5}
+DEFAULT_MAPGEN={'genCoast_iter':5,'genCoast_scatter':20}
 ######################
 #     Generators
 ##########
 
-def mapGen(mode,size,terrains,**kwargs):
+def mapGen(mode,size,terrains=DEFAULT_COLORS,**kwargs):
 	"""mapgen(mode,size,terrains,**kwargs) => Generate a <size> PIL immage
 	The aditional arguments can set some more specific parameters"""
 	pict=init_image(mode,size)
 	drpict=ImageDraw.Draw(pict)
 	pixt=pict.load()
+	init_map(kwargs)
 	
-	random.seed()
-	kwargs.update(DEFAULT_MAPGEN)
 	genSea(drpict,size,terrains['sea'])
-	middle=genCoast(drpict,size,terrains['coast'],kwargs['genCoast_iter'])
+	middle=genCoast(drpict,size,terrains['coast'],kwargs['genCoast_iter'],kwargs['genCoast_scatter'])
 	genBorders(drpict,size,terrains['borders'])
 	floodFill(pixt,middle,terrains['coast'],terrains['borders'])
 	
@@ -65,9 +64,9 @@ def mapGen(mode,size,terrains,**kwargs):
 def genSea(pict,size,color):
 	pict.rectangle((0,0,size[0],size[1]),color)
 	
-def genCoast(pict,size,color,iters):
+def genCoast(pict,size,color,iters,scatter):
 	ax,ay,aX,aY=randEdges(size)
-	liste=gg.multiScatter([[ax,ay],[aX,aY]],iters)
+	liste=gg.multiScatter([[ax,ay],[aX,aY]],iters,scatter)
 	liste.draw(pict,color)
 	return liste.middle(0,len(liste)-1)
 
@@ -76,7 +75,12 @@ def genBorders(pict,size,color):
 ######################
 #     Utils
 ##########
-
+def init_map(kwargs):
+	random.seed()
+	for elt in DEFAULT_MAPGEN:
+		if elt not in kwargs:
+			kwargs[elt]=DEFAULT_MAPGEN[elt]
+	
 def init_image(mode,size):
 	return Image.new(mode,size)
 

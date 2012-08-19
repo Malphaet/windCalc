@@ -77,6 +77,8 @@ class scatteredLine():
 		for i in xrange(mx-1):
 			draw.line((self[i][0],self[i][1],self[i+1][0],self[i+1][1]),color)
 	
+	def line(self):
+		return self._list
 	def __repr__(self):
 		return self._list
 	def __str__(self):

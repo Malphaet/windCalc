@@ -9,4 +9,4 @@ Map generator mapGen included
 TODO
 ========
 * Set of functions (erode, canyon, mountain...)
-
+* Well made semi-mathematical vectors
